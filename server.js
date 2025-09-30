@@ -12,23 +12,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve frontend (static files)
 app.use(express.static(path.join(__dirname, "Frontend")));
 
-// بيانات المنتجات (مؤقتة للتجريب)
+// بيانات مؤقتة
 let products = [
   { id: 1, name: "T-shirt", price: 15000 },
   { id: 2, name: "Pants", price: 25000 },
   { id: 3, name: "Shoes", price: 40000 }
 ];
 
-// 🟢 API: جلب المنتجات
+// ✅ API: جلب المنتجات
 app.get("/products", (req, res) => {
   res.json(products);
 });
 
-// 🟢 API: تسجيل الدخول
+// ✅ API: تسجيل الدخول
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
-
-  // بيانات تسجيل دخول تجريبية
   if (username === "admin" && password === "1234") {
     res.json({ success: true, message: "تم تسجيل الدخول بنجاح" });
   } else {
@@ -36,11 +34,11 @@ app.post("/login", (req, res) => {
   }
 });
 
-// 🟢 API: إضافة مادة جديدة للمخزن
+// ✅ API: إضافة منتج
 app.post("/add-item", (req, res) => {
   const { name, color, totalQty, sizes } = req.body;
 
-  // ✅ تم إصلاح الشرط هنا
+  // شرط بسيط وواضح
   if (!name  !color  !totalQty || !sizes) {
     return res.status(400).json({ error: "الرجاء إدخال جميع الحقول" });
   }
@@ -54,20 +52,20 @@ app.post("/add-item", (req, res) => {
   };
 
   products.push(newItem);
-  res.json({ success: true, message: "تمت إضافة المادة", item: newItem });
+  res.json({ success: true, message: "✅ تمت إضافة المادة", item: newItem });
 });
 
-// 🟢 صفحة المخزن
+// ✅ صفحة المخزن
 app.get("/almakhzan", (req, res) => {
   res.sendFile(path.join(__dirname, "Frontend", "almakhzan.html"));
 });
 
-// 🟢 أي رابط غير معروف → يرجع index.html
+// ✅ أي رابط غير موجود → يرجع index.html
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "Frontend", "index.html"));
 });
 
-// 🚀 تشغيل السيرفر
+// ✅ تشغيل السيرفر
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });
