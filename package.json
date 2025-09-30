@@ -3,9 +3,8 @@
   "version": "1.0.0",
   "description": "Inventory and Sales Management System",
   "main": "server.js",
-  "type": "module",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.cjs"
   },
   "keywords": [],
   "author": "",
