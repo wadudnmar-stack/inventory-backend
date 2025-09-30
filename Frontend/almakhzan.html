@@ -2,120 +2,130 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>المخزن</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
-      text-align: center;
-      padding: 20px;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    h1 { color: #333; }
-    .box {
+    .container {
       background: white;
       padding: 20px;
       border-radius: 10px;
       width: 350px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
     }
-    input, button, select {
-      margin: 10px 0;
+    input, select {
+      width: 100%;
       padding: 8px;
-      width: 90%;
+      margin: 6px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: green;
+      color: white;
+      padding: 10px;
+      border: none;
+      width: 100%;
+      border-radius: 5px;
       font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: darkgreen;
     }
     .sizes {
       display: flex;
       justify-content: space-between;
-      margin-top: 15px;
+      margin-top: 10px;
     }
-    .sizes div {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 14px;
+    .sizes input {
+      width: 50px;
     }
     .message {
-      margin-top: 15px;
+      margin-top: 10px;
       font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>المخزن</h2>
+    <input type="text" id="name" placeholder="اسم المادة" required>
+    
+    <label>اللون:</label>
+    <input type="color" id="color" value="#000000">
 
-  <h1>المخزن</h1>
-  <div class="box">
-    <input type="text" id="itemName" placeholder="اسم المادة">
-    <input type="color" id="itemColor" value="#000000">
-    <input type="number" id="totalQty" placeholder="الكمية الكلية">
+    <input type="number" id="quantity" placeholder="الكمية الكلية" required>
 
     <div class="sizes">
-      <div><label>M</label><input type="number" id="qtyM" placeholder="العدد"></div>
-      <div><label>L</label><input type="number" id="qtyL" placeholder="العدد"></div>
-      <div><label>XL</label><input type="number" id="qtyXL" placeholder="العدد"></div>
-      <div><label>XXL</label><input type="number" id="qtyXXL" placeholder="العدد"></div>
-      <div><label>3XL</label><input type="number" id="qty3XL" placeholder="العدد"></div>
+      <div>
+        <label>M</label>
+        <input type="number" id="sizeM" value="0">
+      </div>
+      <div>
+        <label>L</label>
+        <input type="number" id="sizeL" value="0">
+      </div>
+      <div>
+        <label>XL</label>
+        <input type="number" id="sizeXL" value="0">
+      </div>
+      <div>
+        <label>XXL</label>
+        <input type="number" id="sizeXXL" value="0">
+      </div>
+      <div>
+        <label>3XL</label>
+        <input type="number" id="size3XL" value="0">
+      </div>
     </div>
 
-    <button onclick="saveItem()">💾 حفظ</button>
+    <button onclick="saveItem()">حفظ</button>
     <div class="message" id="message"></div>
   </div>
 
   <script>
     async function saveItem() {
-      const name = document.getElementById('itemName').value;
-      const color = document.getElementById('itemColor').value;
-      const total = parseInt(document.getElementById('totalQty').value) || 0;
+      const name = document.getElementById("name").value;
+      const color = document.getElementById("color").value;
+      const quantity = document.getElementById("quantity").value;
 
-      const qtyM = parseInt(document.getElementById('qtyM').value) || 0;
-      const qtyL = parseInt(document.getElementById('qtyL').value) || 0;
-      const qtyXL = parseInt(document.getElementById('qtyXL').value) || 0;
-      const qtyXXL = parseInt(document.getElementById('qtyXXL').value) || 0;
-      const qty3XL = parseInt(document.getElementById('qty3XL').value) || 0;
-
-      const sum = qtyM + qtyL + qtyXL + qtyXXL + qty3XL;
-      const msgBox = document.getElementById('message');
-
-      if (!name || total <= 0) {
-        msgBox.innerHTML = "⚠️ يرجى إدخال اسم المادة والكمية الكلية.";
-        msgBox.style.color = "red";
-        return;
-      }
-
-      if (sum !== total) {
-        msgBox.innerHTML = "⚠️ المجموع (" + sum + ") لا يساوي الكمية الكلية (" + total + ")";
-        msgBox.style.color = "red";
-        return;
-      }
+      const sizes = {
+        M: document.getElementById("sizeM").value,
+        L: document.getElementById("sizeL").value,
+        XL: document.getElementById("sizeXL").value,
+        XXL: document.getElementById("sizeXXL").value,
+        "3XL": document.getElementById("size3XL").value
+      };
 
       try {
-        const res = await fetch('/api/items', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            name,
-            color,
-            total,
-            sizes: { M: qtyM, L: qtyL, XL: qtyXL, XXL: qtyXXL, "3XL": qty3XL }
-          })
+        const res = await fetch("/add-item", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, color, quantity, sizes })
         });
 
         const data = await res.json();
-
-        if (res.ok) {
-          msgBox.innerHTML = "✅ تم الحفظ: " + data.message;
-          msgBox.style.color = "green";
+        if (data.success) {
+          document.getElementById("message").innerHTML = "✅ " + data.message;
+          document.getElementById("message").style.color = "green";
         } else {
-          msgBox.innerHTML = "❌ خطأ: " + data.error;
-          msgBox.style.color = "red";
+          document.getElementById("message").innerHTML = "❌ " + data.message;
+          document.getElementById("message").style.color = "red";
         }
       } catch (err) {
-        msgBox.innerHTML = "❌ خطأ في الاتصال بالسيرفر";
-        msgBox.style.color = "red";
+        document.getElementById("message").innerHTML = "❌ خطأ في الاتصال بالسيرفر";
+        document.getElementById("message").style.color = "red";
       }
     }
   </script>
-
 </body>
 </html>
