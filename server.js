@@ -28,11 +28,16 @@ app.get("/products", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
+ // Route: تسجيل الدخول
+app.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
   // بيانات تسجيل دخول تجريبية
   if (username === "admin" && password === "1234") {
-    res.json({ success: true, message: "تم تسجيل الدخول بنجاح" });
+    // ✅ يوجّه مباشرة لصفحة المخزن
+    res.redirect("/almakhzan");
   } else {
-    res.json({ success: false, message: "اسم المستخدم أو كلمة المرور غير صحيحة" });
+    res.send("❌ اسم المستخدم أو كلمة المرور غير صحيحة");
   }
 });
 
