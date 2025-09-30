@@ -1,12 +1,11 @@
-import express from "express";
-import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
-import path from "path";
-
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
+const { createClient } = require("@supabase/supabase-js");
+require("dotenv").config();
 
 const app = express();
-const PORT = 3000;
+app.use(cors());
+app.use(express.json());
 
 // ربط Supabase
 const supabase = createClient(
@@ -14,24 +13,25 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-// تحديد مجلد الواجهة (frontend)
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, "frontend")));
+// الصفحة الرئيسية
+app.get("/", (req, res) => {
+  res.send("✅ السيرفر شغال! جرّب /products للبيانات");
+});
 
-// API للمنتجات
-app.get("/api/products", async (req, res) => {
-  console.log("Connecting to table: products");
-  const { data, error } = await supabase.from("products").select("*");
-
-  if (error) {
-    console.error("Supabase error:", error);
-    return res.status(500).send("❌ خطأ في الاتصال بقاعدة البيانات");
+// API: جلب المنتجات
+app.get("/products", async (req, res) => {
+  try {
+    const { data, error } = await supabase.from("products").select("*");
+    if (error) throw error;
+    res.json(data);
+  } catch (err) {
+    console.error("خطأ في جلب المنتجات:", err);
+    res.status(500).json({ error: "فشل في جلب المنتجات" });
   }
-
-  res.json(data);
 });
 
 // تشغيل السيرفر
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
