@@ -2,94 +2,36 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>تسجيل الدخول</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-      background: #f0f0f0;
-    }
-    .login-container {
-      background: #fff;
-      padding: 25px;
-      border-radius: 10px;
-      width: 320px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    h2 {
-      margin-bottom: 20px;
-      color: #333;
-    }
-    input {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background: #007bff;
-      color: #fff;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #0056b3;
-    }
-    .message {
-      margin-top: 15px;
-      font-size: 14px;
-      color: red;
-    }
-  </style>
 </head>
 <body>
-  <div class="login-container">
-    <h2>تسجيل الدخول</h2>
-    <form id="loginForm">
-      <input type="text" id="username" placeholder="اسم المستخدم" required>
-      <input type="password" id="password" placeholder="كلمة المرور" required>
-      <button type="submit">دخول</button>
-    </form>
-    <div class="message" id="message"></div>
-  </div>
+  <h2>تسجيل الدخول</h2>
+  <form id="loginForm">
+    <input type="text" id="username" placeholder="اسم المستخدم" required><br><br>
+    <input type="password" id="password" placeholder="كلمة المرور" required><br><br>
+    <button type="submit">دخول</button>
+  </form>
 
   <script>
-    const form = document.getElementById('loginForm');
-    const message = document.getElementById('message');
-
-    form.addEventListener('submit', async (e) => {
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
 
-      try {
-        const res = await fetch('/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, password })
-        });
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (data.success) {
-          window.location.href = "/dashboard.html"; // بعد النجاح يفتح لوحة التحكم
-        } else {
-          message.textContent = data.message;
-        }
-      } catch (err) {
-        message.textContent = "⚠️ خطأ بالاتصال بالسيرفر";
+      if (data.success) {
+        // ✅ تحويل لصفحة المخزن
+        window.location.href = "/almakhzan";
+      } else {
+        alert(data.message);
       }
     });
   </script>
