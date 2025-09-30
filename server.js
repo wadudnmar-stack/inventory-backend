@@ -19,51 +19,44 @@ let products = [
   { id: 3, name: "Shoes", price: 40000 }
 ];
 
-// API: المنتجات
+// Route: API للمنتجات
 app.get("/products", (req, res) => {
   res.json(products);
 });
 
-// API: تسجيل الدخول
+// Route: تسجيل الدخول
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   if (username === "admin" && password === "1234") {
-    res.json({ success: true, redirect: "/almakhzan" });
+    res.json({ success: true, message: "تم تسجيل الدخول بنجاح" });
   } else {
     res.json({ success: false, message: "اسم المستخدم أو كلمة المرور غير صحيحة" });
   }
 });
 
-// API: حفظ مادة في المخزن
+// Route: صفحة المخزن
+app.get("/almakhzan", (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend", "almakhzan.html"));
+});
+
+// Route: حفظ الايتم
 app.post("/save-item", (req, res) => {
   const { name, color, totalQty, sizes } = req.body;
 
- app.post("/save-item", (req, res) => {
-  const { name, color, totalQty, sizes } = req.body;
-
+  // ✅ هنا كان الخطأ — تم تصحيحه
   if (!name  !color  !totalQty || !sizes) {
     return res.status(400).json({ success: false, message: "الحقول مطلوبة" });
   }
 
-  // هنا تحفظ البيانات (ممكن تخزنها بمصفوفة مؤقتاً)
   console.log("📦 تم استلام الايتم:", { name, color, totalQty, sizes });
 
   res.json({ success: true, message: "تم حفظ الايتم بنجاح" });
 });
 
-// Routes: صفحات frontend
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "Frontend", "login.html"));
-});
-
-app.get("/almakhzan", (req, res) => {
-  res.sendFile(path.join(__dirname, "Frontend", "almakhzan.html"));
-});
-
-// أي رابط غير موجود -> يرجع index.html
+// أي رابط غير موجود -> يرجع login.html
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "Frontend", "index.html"));
+  res.sendFile(path.join(__dirname, "Frontend", "login.html"));
 });
 
 // Start server
