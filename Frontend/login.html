@@ -2,36 +2,69 @@
 <html lang="ar">
 <head>
   <meta charset="UTF-8">
-  <title>تسجيل الدخول</title>
+  <title>المخزن</title>
+  <style>
+    body { font-family: Tahoma; text-align: center; background: #f2f2f2; }
+    .container { width: 350px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 8px; }
+    input, select { margin: 8px 0; padding: 8px; width: 90%; }
+    button { padding: 10px 15px; background: green; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: darkgreen; }
+    table { width: 100%; margin-top: 15px; }
+    td { padding: 5px; }
+  </style>
 </head>
 <body>
-  <h2>تسجيل الدخول</h2>
-  <form id="loginForm">
-    <input type="text" id="username" placeholder="اسم المستخدم" required><br><br>
-    <input type="password" id="password" placeholder="كلمة المرور" required><br><br>
-    <button type="submit">دخول</button>
-  </form>
+  <div class="container">
+    <h2>المخزن</h2>
+
+    <input type="text" id="itemName" placeholder="اسم المادة">
+    <input type="text" id="itemColor" placeholder="اللون">
+    <input type="number" id="itemQuantity" placeholder="الكمية الكلية">
+
+    <table border="1">
+      <tr>
+        <td>M</td><td><input type="number" id="sizeM" value="0"></td>
+        <td>L</td><td><input type="number" id="sizeL" value="0"></td>
+      </tr>
+      <tr>
+        <td>XL</td><td><input type="number" id="sizeXL" value="0"></td>
+        <td>XXL</td><td><input type="number" id="sizeXXL" value="0"></td>
+      </tr>
+      <tr>
+        <td>3XL</td><td><input type="number" id="size3XL" value="0"></td>
+      </tr>
+    </table>
+
+    <button id="saveBtn">حفظ</button>
+
+    <p id="msg"></p>
+  </div>
 
   <script>
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
+    document.getElementById("saveBtn").addEventListener("click", async () => {
+      const name = document.getElementById("itemName").value;
+      const color = document.getElementById("itemColor").value;
+      const quantity = document.getElementById("itemQuantity").value;
 
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
+      const sizes = {
+        M: document.getElementById("sizeM").value,
+        L: document.getElementById("sizeL").value,
+        XL: document.getElementById("sizeXL").value,
+        XXL: document.getElementById("sizeXXL").value,
+        "3XL": document.getElementById("size3XL").value,
+      };
 
-      const res = await fetch("/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-      });
+      try {
+        const response = await fetch("/add-item", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, color, quantity, sizes })
+        });
 
-      const data = await res.json();
-
-      if (data.success) {
-        // ✅ تحويل لصفحة المخزن
-        window.location.href = "/almakhzan";
-      } else {
-        alert(data.message);
+        const result = await response.json();
+        document.getElementById("msg").innerText = result.message;
+      } catch (error) {
+        document.getElementById("msg").innerText = "❌ خطأ في الاتصال بالسيرفر";
       }
     });
   </script>
