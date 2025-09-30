@@ -36,6 +36,11 @@ app.post("/login", (req, res) => {
   }
 });
 
+// ✅ Route: صفحة المخزن
+app.get("/almakhzan", (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend", "almakhzan.html"));
+});
+
 // أي رابط غير موجود -> يرجع index.html
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "Frontend", "index.html"));
