@@ -1,131 +1,69 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>المخزن</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 350px;
-      text-align: center;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin: 6px 0;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-    button {
-      background: green;
-      color: white;
-      padding: 10px;
-      border: none;
-      width: 100%;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: darkgreen;
-    }
-    .sizes {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-    .sizes input {
-      width: 50px;
-    }
-    .message {
-      margin-top: 10px;
-      font-weight: bold;
-    }
+    body { font-family: Arial; direction: rtl; text-align: center; background: #f5f5f5; }
+    .form-box { max-width: 400px; margin: 50px auto; padding: 20px; background: white; border: 1px solid #ccc; border-radius: 10px; }
+    input { margin: 5px; padding: 8px; width: 90%; }
+    button { margin-top: 10px; padding: 10px; width: 100%; background: green; color: white; border: none; border-radius: 5px; }
   </style>
 </head>
 <body>
-  <div class="container">
+  <div class="form-box">
     <h2>المخزن</h2>
-    <input type="text" id="name" placeholder="اسم المادة" required>
-    
-    <label>اللون:</label>
-    <input type="color" id="color" value="#000000">
+    <form id="saveForm">
+      <input type="text" id="name" placeholder="اسم المادة" required />
+      <input type="text" id="color" placeholder="اللون" required />
+      <input type="number" id="totalQty" placeholder="الكمية الكلية" required />
 
-    <input type="number" id="quantity" placeholder="الكمية الكلية" required>
+      <label>القياسات</label>
+      <div>
+        M: <input type="number" id="M" value="0" />
+        L: <input type="number" id="L" value="0" />
+        XL: <input type="number" id="XL" value="0" />
+        XXL: <input type="number" id="XXL" value="0" />
+        3XL: <input type="number" id="3XL" value="0" />
+      </div>
 
-    <div class="sizes">
-      <div>
-        <label>M</label>
-        <input type="number" id="sizeM" value="0">
-      </div>
-      <div>
-        <label>L</label>
-        <input type="number" id="sizeL" value="0">
-      </div>
-      <div>
-        <label>XL</label>
-        <input type="number" id="sizeXL" value="0">
-      </div>
-      <div>
-        <label>XXL</label>
-        <input type="number" id="sizeXXL" value="0">
-      </div>
-      <div>
-        <label>3XL</label>
-        <input type="number" id="size3XL" value="0">
-      </div>
-    </div>
-
-    <button onclick="saveItem()">حفظ</button>
-    <div class="message" id="message"></div>
+      <button type="submit">حفظ</button>
+    </form>
   </div>
 
   <script>
-    async function saveItem() {
+    document.getElementById("saveForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
       const name = document.getElementById("name").value;
       const color = document.getElementById("color").value;
-      const quantity = document.getElementById("quantity").value;
-
+      const totalQty = document.getElementById("totalQty").value;
       const sizes = {
-        M: document.getElementById("sizeM").value,
-        L: document.getElementById("sizeL").value,
-        XL: document.getElementById("sizeXL").value,
-        XXL: document.getElementById("sizeXXL").value,
-        "3XL": document.getElementById("size3XL").value
+        M: document.getElementById("M").value,
+        L: document.getElementById("L").value,
+        XL: document.getElementById("XL").value,
+        XXL: document.getElementById("XXL").value,
+        "3XL": document.getElementById("3XL").value,
       };
 
       try {
-        const res = await fetch("/add-item", {
+        const res = await fetch("/save-item", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, color, quantity, sizes })
+          body: JSON.stringify({ name, color, totalQty, sizes }),
         });
 
         const data = await res.json();
         if (data.success) {
-          document.getElementById("message").innerHTML = "✅ " + data.message;
-          document.getElementById("message").style.color = "green";
+          alert("✅ تم الحفظ بنجاح!");
         } else {
-          document.getElementById("message").innerHTML = "❌ " + data.message;
-          document.getElementById("message").style.color = "red";
+          alert("⚠️ خطأ: " + data.message);
         }
       } catch (err) {
-        document.getElementById("message").innerHTML = "❌ خطأ في الاتصال بالسيرفر";
-        document.getElementById("message").style.color = "red";
+        alert("❌ خطأ في الاتصال بالسيرفر");
       }
-    }
+    });
   </script>
 </body>
 </html>

@@ -5,39 +5,63 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// خدمة ملفات الواجهة
+// Serve frontend (static files)
 app.use(express.static(path.join(__dirname, "Frontend")));
 
-// صفحة تسجيل الدخول كبداية
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "Frontend", "login.html"));
+// منتجات تجريبية
+let products = [
+  { id: 1, name: "T-shirt", price: 15000 },
+  { id: 2, name: "Pants", price: 25000 },
+  { id: 3, name: "Shoes", price: 40000 }
+];
+
+// API: المنتجات
+app.get("/products", (req, res) => {
+  res.json(products);
 });
 
-// API تسجيل الدخول
+// API: تسجيل الدخول
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   if (username === "admin" && password === "1234") {
-    // تسجيل دخول صحيح → إعادة توجيه للمخزن
-    res.redirect("/almakhzan");
+    res.json({ success: true, redirect: "/almakhzan" });
   } else {
-    res.send("<h2>❌ اسم المستخدم أو كلمة المرور خطأ</h2><a href='/'>رجوع</a>");
+    res.json({ success: false, message: "اسم المستخدم أو كلمة المرور غير صحيحة" });
   }
 });
 
-// صفحة المخزن
+// API: حفظ مادة في المخزن
+app.post("/save-item", (req, res) => {
+  const { name, color, totalQty, sizes } = req.body;
+
+  if (!name  !color  !totalQty || !sizes) {
+    return res.json({ success: false, message: "البيانات غير مكتملة" });
+  }
+
+  console.log("✅ مادة جديدة:", { name, color, totalQty, sizes });
+  res.json({ success: true, message: "تم الحفظ بنجاح" });
+});
+
+// Routes: صفحات frontend
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "Frontend", "login.html"));
+});
+
 app.get("/almakhzan", (req, res) => {
   res.sendFile(path.join(__dirname, "Frontend", "almakhzan.html"));
 });
 
-// أي رابط غير موجود → يرجع login.html
+// أي رابط غير موجود -> يرجع index.html
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "Frontend", "login.html"));
+  res.sendFile(path.join(__dirname, "Frontend", "index.html"));
 });
 
+// Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });
