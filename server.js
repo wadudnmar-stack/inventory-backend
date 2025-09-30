@@ -28,6 +28,7 @@ app.get("/products", (req, res) => {
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
+  // بيانات تسجيل دخول تجريبية
   if (username === "admin" && password === "1234") {
     res.json({ success: true, message: "تم تسجيل الدخول بنجاح" });
   } else {
@@ -40,26 +41,25 @@ app.get("/almakhzan", (req, res) => {
   res.sendFile(path.join(__dirname, "Frontend", "almakhzan.html"));
 });
 
-// Route: حفظ الايتم
+// Route: حفظ عنصر جديد
 app.post("/save-item", (req, res) => {
   const { name, color, totalQty, sizes } = req.body;
 
-  // ✅ هنا كان الخطأ — تم تصحيحه
-  if (!name  !color  !totalQty || !sizes) {
-    return res.status(400).json({ success: false, message: "الحقول مطلوبة" });
+  if (!name || !color || !totalQty || !sizes) {
+    return res.status(400).json({ success: false, message: "البيانات غير مكتملة" });
   }
 
-  console.log("📦 تم استلام الايتم:", { name, color, totalQty, sizes });
+  console.log("📦 تم استلام ايتم جديد:", req.body);
 
-  res.json({ success: true, message: "تم حفظ الايتم بنجاح" });
+  res.json({ success: true, message: "تم حفظ الايتم بنجاح", item: req.body });
 });
 
-// أي رابط غير موجود -> يرجع login.html
+// أي رابط غير موجود -> يرجع index.html
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "Frontend", "login.html"));
+  res.sendFile(path.join(__dirname, "Frontend", "index.html"));
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(🚀 Server is running on port ${PORT});
 });
