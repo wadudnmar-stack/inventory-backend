@@ -3,13 +3,13 @@ const path = require("path");
 const bodyParser = require("body-parser");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Serve frontend (static files)
+// Serve frontend
 app.use(express.static(path.join(__dirname, "Frontend")));
 
 // منتجات تجريبية
@@ -19,52 +19,53 @@ let products = [
   { id: 3, name: "Shoes", price: 40000 }
 ];
 
-// Route: API للمنتجات
+// API: جلب المنتجات
 app.get("/products", (req, res) => {
   res.json(products);
 });
 
-// Route: تسجيل الدخول
+// API: تسجيل الدخول
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
 
- // Route: تسجيل الدخول
-app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-
-  // بيانات تسجيل دخول تجريبية
   if (username === "admin" && password === "1234") {
-    // ✅ يوجّه مباشرة لصفحة المخزن
-    res.redirect("/almakhzan");
+    res.json({ success: true, redirect: "/almakhzan" });
   } else {
-    res.send("❌ اسم المستخدم أو كلمة المرور غير صحيحة");
+    res.json({ success: false, message: "❌ اسم المستخدم أو كلمة المرور غير صحيحة" });
   }
 });
 
-// Route: صفحة المخزن
+// صفحة المخزن
 app.get("/almakhzan", (req, res) => {
   res.sendFile(path.join(__dirname, "Frontend", "almakhzan.html"));
 });
 
-// Route: حفظ عنصر جديد
+// API: حفظ مادة جديدة
 app.post("/save-item", (req, res) => {
   const { name, color, totalQty, sizes } = req.body;
 
   if (!name || !color || !totalQty || !sizes) {
-    return res.status(400).json({ success: false, message: "البيانات غير مكتملة" });
+    return res.status(400).json({ success: false, message: "⚠ البيانات ناقصة" });
   }
 
-  console.log("📦 تم استلام ايتم جديد:", req.body);
+  const newItem = {
+    id: products.length + 1,
+    name,
+    color,
+    totalQty,
+    sizes
+  };
 
-  res.json({ success: true, message: "تم حفظ الايتم بنجاح", item: req.body });
+  products.push(newItem);
+  res.json({ success: true, message: "✅ تم الحفظ", item: newItem });
 });
 
-// أي رابط غير موجود -> يرجع index.html
+// أي رابط غير موجود → يرجع login.html
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "Frontend", "index.html"));
+  res.sendFile(path.join(__dirname, "Frontend", "login.html"));
 });
 
-// Start server
+// تشغيل السيرفر
 app.listen(PORT, () => {
-console.log(`🚀 Server is running on port ${PORT}`);
+  console.log(🚀 Server is running on port ${PORT});
 });
