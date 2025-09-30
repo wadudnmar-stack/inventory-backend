@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>📦 المنتجات</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>قائمة المنتجات</h1>
+  <div id="products"></div>
+
+  <script>
+    async function loadProducts() {
+      try {
+        const res = await fetch("/api/products"); // 👈 جلب من السيرفر
+        const products = await res.json();
+
+        const container = document.getElementById("products");
+        container.innerHTML = "";
+
+        products.forEach(p => {
+          const div = document.createElement("div");
+          div.className = "product";
+          div.innerHTML = `
+            <h2>${p.name}</h2>
+            <p>السعر: ${p.price} دينار</p>
+            <p>اللون: ${p.color}</p>
+            <p>المقاس: ${p.size}</p>
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error("خطأ في جلب المنتجات:", err);
+      }
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>
