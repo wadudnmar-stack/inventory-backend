@@ -39,12 +39,17 @@ app.post("/login", (req, res) => {
 app.post("/save-item", (req, res) => {
   const { name, color, totalQty, sizes } = req.body;
 
+ app.post("/save-item", (req, res) => {
+  const { name, color, totalQty, sizes } = req.body;
+
   if (!name  !color  !totalQty || !sizes) {
-    return res.json({ success: false, message: "البيانات غير مكتملة" });
+    return res.status(400).json({ success: false, message: "الحقول مطلوبة" });
   }
 
-  console.log("✅ مادة جديدة:", { name, color, totalQty, sizes });
-  res.json({ success: true, message: "تم الحفظ بنجاح" });
+  // هنا تحفظ البيانات (ممكن تخزنها بمصفوفة مؤقتاً)
+  console.log("📦 تم استلام الايتم:", { name, color, totalQty, sizes });
+
+  res.json({ success: true, message: "تم حفظ الايتم بنجاح" });
 });
 
 // Routes: صفحات frontend
