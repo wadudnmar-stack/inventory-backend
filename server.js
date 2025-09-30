@@ -1,20 +1,24 @@
-const express = require("express");
+const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// اختبار السيرفر شغال
-app.get("/", (req, res) => {
-  res.send("✅ Server is running on Render!");
+// منتجات تجريبية
+const products = [
+  { id: 1, name: "T-shirt", price: 15000 },
+  { id: 2, name: "Pants", price: 25000 },
+  { id: 3, name: "Shoes", price: 40000 }
+];
+
+// راوت رئيسي
+app.get('/', (req, res) => {
+  res.send('✅ Server is running on Render!');
 });
 
-// إضافة مسار للـ products
-app.get("/products", (req, res) => {
-  res.json([
-    { id: 1, name: "Product A" },
-    { id: 2, name: "Product B" }
-  ]);
+// راوت للمنتجات
+app.get('/products', (req, res) => {
+  res.json(products);
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
